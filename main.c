@@ -23,17 +23,19 @@ int** alloc(int lin, int col) {
 int scan_labr(int** labirinto, int lin, int col, pilha *p, int x, int y) {
 	int cont = 0;
 
+
 	if(labirinto[y+1][x] != 0 && y+1 < lin) {
 		push(p, criar_item((y+1)*1000 + x));
 		cont++;
 	}
+	fprintf(stderr, "até aqui vai 1234\n");
 	
-	if(labirinto[y][x-1] != 0 && x-1 > col) {
+	if(labirinto[y][x-1] != 0 && x-1 >= 0) {
 		push(p, criar_item((y)*1000 + x-1));
 		cont++;
 	}
 	
-	if(labirinto[y-1][x] != 0 && y-1 > lin) {
+	if(labirinto[y-1][x] != 0 && y-1 >= 0) {
 		push(p, criar_item((y-1)*1000 + x));
 		cont++;
 	}
@@ -50,10 +52,11 @@ void mem_free(int lin, int ***labr) {
 	for(int i = 0; i < lin; i++)
 		free((*labr)[i]);
 	
-	free(labr);
+	free(*labr);
 }
 
 int main(){
+
 	int linha, coluna, **labirinto, x = 0, y = 0, topo, cont;
 	pilha *p;
 	item *aux;
@@ -67,19 +70,20 @@ int main(){
 		for(int j = 0; j < coluna; j++)
 			scanf("%d", &labirinto[i][j]);
 
+
 	push(p, criar_item(1001));
 
-	while(labirinto[y][x] != 2) {
+	do {
+		
 		pop(p, &aux);
 		topo = get_valor(aux);
 		y = topo/1000;
 		x = topo%1000;
-		destruir_item(aux);
 
 		printf("(%d, %d)", y, x);
 
 		cont = scan_labr(labirinto, linha, coluna, p, x, y);
-	}
+	}while(labirinto[y][x] != 2);
 	
 	destruir_pilha(p);
 	mem_free(linha, &labirinto);
