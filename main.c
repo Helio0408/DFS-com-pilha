@@ -6,7 +6,7 @@
 
 int** alloc(int lin, int col);
 void mem_free(int lin, int ***labr);
-int scan_labr(int** labirinto, int lin, int col, pilha *p, int x, int y);
+void scan_labr(int** labirinto, int lin, int col, pilha *p, int x, int y);
 
 int** alloc(int lin, int col) {
 	int **p = (int**) malloc(lin * sizeof(int*));
@@ -20,32 +20,18 @@ int** alloc(int lin, int col) {
 	return p;
 }
 
-int scan_labr(int** labirinto, int lin, int col, pilha *p, int x, int y) {
-	int cont = 0;
-
-
-	if(labirinto[y+1][x] != 0 && y+1 < lin) {
+void scan_labr(int** labirinto, int lin, int col, pilha *p, int x, int y) {
+	if(y+1 < lin && labirinto[y+1][x] != 0)
 		push(p, criar_item((y+1)*1000 + x));
-		cont++;
-	}
-	fprintf(stderr, "até aqui vai 1234\n");
-	
-	if(labirinto[y][x-1] != 0 && x-1 >= 0) {
-		push(p, criar_item((y)*1000 + x-1));
-		cont++;
-	}
-	
-	if(labirinto[y-1][x] != 0 && y-1 >= 0) {
-		push(p, criar_item((y-1)*1000 + x));
-		cont++;
-	}
-	
-	if(labirinto[y][x+1] != 0 && x+1 < col) {
-		push(p, criar_item((y)*1000 + x+1));
-		cont++;
-	}
 
-	return cont;
+	if(x-1 >= 0 && labirinto[y][x-1] != 0)
+		push(p, criar_item((y)*1000 + x-1));
+	
+	if(y-1 >= 0 && labirinto[y-1][x] != 0)
+		push(p, criar_item((y-1)*1000 + x));
+	
+	if(x+1 < col && labirinto[y][x+1] != 0)
+		push(p, criar_item((y)*1000 + x+1));
 }
 
 void mem_free(int lin, int ***labr) {
@@ -71,20 +57,25 @@ int main(){
 			scanf("%d", &labirinto[i][j]);
 
 
-	push(p, criar_item(1001));
+	push(p, criar_item(0000));
 
-	do {
-		
-		pop(p, &aux);
-		topo = get_valor(aux);
-		y = topo/1000;
-		x = topo%1000;
+	if(linha == 1 && coluna == 1)
+		printf("(0, 0)\n");
+	else{
+		do {
+			labirinto[y][x] = 0;
 
-		printf("(%d, %d)", y, x);
+			pop(p, &aux);
+			topo = get_valor(aux);
 
-		cont = scan_labr(labirinto, linha, coluna, p, x, y);
-	}while(labirinto[y][x] != 2);
-	
+			y = topo/1000;
+			x = topo%1000;
+			printf("(%d, %d)\n", y, x);
+
+			scan_labr(labirinto, linha, coluna, p, x, y);
+		}while(labirinto[y][x] != 2);
+	}
+
 	destruir_pilha(p);
 	mem_free(linha, &labirinto);
 
